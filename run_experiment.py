@@ -16,8 +16,9 @@ FRAUD_ALGOS = {
 }
 
 AGG_ALGOS = {
-    'agg1': ['telltail', 'truncate_svd_sum10', 'degree'],
-    'agg2': ['telltail', 'degree_neg', 'truncate_svd_max10']
+    'agg1': (['telltail', 'truncate_svd_sum10', 'degree'], np.sum),
+    'agg2': (['telltail', 'degree_neg', 'truncate_svd_max10'], np.sum),
+    'agg_max': (['telltail', 'truncate_svd_max10', 'degree', 'degree_neg'], np.max)
 }
 
 
@@ -39,8 +40,8 @@ def eval_all_fraud_detectors(A, labels, print_out=True):
         scores[name] = S
         aucs[name] = auc_score(S, benign_ind, fraud_ind)
     
-    for name, algos in AGG_ALGOS.items():
-        S = fraud_detectors.agg_scores([scores[algo] for algo in algos])
+    for name, (algos, agg_func) in AGG_ALGOS.items():
+        S = fraud_detectors.agg_scores([scores[algo] for algo in algos], agg_func=agg_func)
         scores[name] = S
         aucs[name] = auc_score(S, benign_ind, fraud_ind)
 
@@ -61,6 +62,7 @@ def run_evaluation_non_private():
 
         aucs, runtimes = eval_all_fraud_detectors(A, labels, print_out=True)
 
+        res[name] = {}
         res[name]['aucs'] = aucs
         res[name]['runtime'] = runtimes
 
@@ -112,12 +114,12 @@ def run_evaluation_subsample_aggregate(k, sub_rate):
 
 
 if __name__ == '__main__':
-    res = run_evaluation_subsample_aggregate(100, 1.)
-    with open('results/pda_100_100.pkl', 'wb') as f:
-        pickle.dump(res, f)
-    # res = run_evaluation_non_private()
-    # with open('results/non_private.pkl', 'wb') as f:
+    # res = run_evaluation_subsample_aggregate(100, 1.)
+    # with open('results/pda_100_100.pkl', 'wb') as f:
     #     pickle.dump(res, f)
+    res = run_evaluation_non_private()
+    with open('results/non_private.pkl', 'wb') as f:
+        pickle.dump(res, f)
 
 
 

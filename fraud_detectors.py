@@ -63,11 +63,12 @@ def score_by_truncate_svd(A, rank, agg_method='sum', sparse=True):
 
 # TellTail
 def score_by_telltail(A):
-    # rng_init is 0
-    fraud_nodes = telltail.run_telltail(A.toarray(),   telltail.get_local_search_init(A, fast=True), np.random.RandomState(0))
-    scores = np.zeros(A.shape[0])
-    scores[fraud_nodes] = 1
-    return scores
+    return np.random.rand(A.shape[0]) >= 0.1  # random scores
+    # # rng_init is 0
+    # fraud_nodes = telltail.run_telltail(A.toarray(),   telltail.get_local_search_init(A, fast=True), np.random.RandomState(0))
+    # scores = np.zeros(A.shape[0])
+    # scores[fraud_nodes] = 1
+    # return scores
 
 ####################################
 ######## Combination of Scores #####
@@ -78,11 +79,12 @@ def replace_zero(m):
         return 1
     return m
 
-def agg_scores(score_list, weights=None):
+def agg_scores(score_list, weights=None, agg_func=np.sum):
     # give equal weight to all scores by default
     if weights is None:
         weights = np.ones(len(score_list)) / len(score_list)
-    return np.sum([weights[i] * scores / replace_zero(max(scores)) for i, scores in enumerate(score_list)], axis=0)
+    norm_scores = [weights[i] * (scores / replace_zero(max(scores))) for i, scores in enumerate(score_list)]
+    return agg_func(norm_scores, axis=0)
 
 ####################################################################################################
 ############## Rank edges by shortest path length between its endpoints ############################
