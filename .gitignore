@@ -1,0 +1,11 @@
+.DS_STORE
+.ipynb_checkpoints/
+__pycache__/
+datasets/elliptic_bitcoin_dataset/original/
+datasets/FDcomp_dataset/original/
+YelpChi.mat
+Amazon.mat
+datasets/FDcomp_dataset/test_mask.csv
+datasets/FDcomp_dataset/train_mask.csv
+datasets/FDcomp_dataset/valid_mask.csv
+testing.ipynb
