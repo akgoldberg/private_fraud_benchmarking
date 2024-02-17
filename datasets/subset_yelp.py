@@ -16,6 +16,11 @@ def subset_yelp(divide_rate=4):
     # subsample one quarter of the graph (equal proportions benign and fraud)
     A_sub, label_sub = partition_duplicate_graph(A, benign_ind, fraud_ind, divide_rate, 1. / divide_rate)[0]
 
+    connected = np.where(A_sub.sum(axis=0) > 0)[1]
+    # drop disconnected
+    A_sub = A_sub[connected][:,connected]
+    label_sub = label_sub[connected]
+
     scipy.sparse.save_npz(f'{PATH}/A_sub.npz', A_sub)
     np.savetxt((f'{PATH}/labels_sub.csv'), label_sub, delimiter=',')
 

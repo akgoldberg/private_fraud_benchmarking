@@ -6,9 +6,16 @@ import partition_aggregate
 import numpy as np
 import time
 import pickle 
+import matlab.engine
+
+ENG = matlab.engine.start_matlab()
+ENG.addpath('fraud_detector_implementations/telltail_matlab', nargout=0)
 
 FRAUD_ALGOS = {
-    'telltail': fraud_detectors.score_by_telltail,
+    'random': fraud_detectors.score_random,
+    'clustering_coeff': lambda A: fraud_detectors.score_by_clustering_coeff(A),
+    'clustering_coeff_neg': lambda A: fraud_detectors.score_by_clustering_coeff(A, negate=True),
+    'community_detection': lambda A: fraud_detectors.score_by_community_detection(A),
     'truncate_svd_sum10': lambda A: fraud_detectors.score_by_truncate_svd(A, 10, agg_method='sum'),
     'truncate_svd_max10': lambda A: fraud_detectors.score_by_truncate_svd(A, 10, agg_method='max'),
     'degree': fraud_detectors.score_by_degree,
@@ -16,9 +23,9 @@ FRAUD_ALGOS = {
 }
 
 AGG_ALGOS = {
-    'agg1': (['telltail', 'truncate_svd_sum10', 'degree'], np.sum),
-    'agg2': (['telltail', 'degree_neg', 'truncate_svd_max10'], np.sum),
-    'agg_max': (['telltail', 'truncate_svd_max10', 'degree', 'degree_neg'], np.max)
+    'agg1': (['community_detection', 'truncate_svd_sum10', 'degree', 'clustering_coeff'], np.sum),
+    'agg2': (['community_detection', 'degree_neg', 'truncate_svd_max10', 'clustering_coeff_neg'], np.sum),
+    'agg_max': (['clustering_coeff', 'truncate_svd_sum10', 'truncate_svd_max10', 'degree', 'community_detection'], np.max)
 }
 
 
@@ -114,13 +121,19 @@ def run_evaluation_subsample_aggregate(k, sub_rate):
 
 
 if __name__ == '__main__':
-    # res = run_evaluation_subsample_aggregate(100, 1.)
-    # with open('results/pda_100_100.pkl', 'wb') as f:
-    #     pickle.dump(res, f)
     res = run_evaluation_non_private()
-    with open('results/non_private.pkl', 'wb') as f:
-        pickle.dump(res, f)
-
-
-
-
+    # # res = run_evaluation_subsample_aggregate(100, 0.01)
+    # # with open('results/pda_100_1.pkl', 'wb') as f:
+    # #     pickle.dump(res, f)
+    # res = run_evaluation_subsample_aggregate(100, 0.1)
+    # with open('results/pda_100_10.pkl', 'wb') as f:
+    #     pickle.dump(res, f)
+    # # res = run_evaluation_subsample_aggregate(100, 0.5)
+    # # with open('results/pda_100_50.pkl', 'wb') as f:
+    # #     pickle.dump(res, f)
+    # # res = run_evaluation_subsample_aggregate(100, 1.0)
+    # # with open('results/pda_100_100.pkl', 'wb') as f:
+    # #     pickle.dump(res, f)
+    # # res = run_evaluation_non_private()
+    # # with open('results/non_private.pkl', 'wb') as f:
+    # #     pickle.dump(res, f)
