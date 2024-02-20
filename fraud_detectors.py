@@ -10,7 +10,8 @@ import igraph as ig
 def to_igraph(A):
     A = scipy.sparse.coo_matrix(A)
     edges = list(zip(A.row, A.col))
-    g = ig.Graph.TupleList(edges)
+    g = ig.Graph(n=A.shape[0])
+    g.add_edges(edges)
     return g
 
 def score_random(A):
@@ -89,7 +90,10 @@ def agg_error(delta, method='sum'):
 # algorithm approximates matrix with rank "rank" and scores based 
 # on reconstruction error per-row
 def score_by_truncate_svd(A, rank, agg_method='sum', sparse=True):
-    return agg_error(get_error(A, rank, sparse), agg_method)
+    try:
+        return agg_error(get_error(A, rank, sparse), agg_method)
+    except:
+        return np.ones(np.shape(A)[0])
     
 ####################################################################################################
 ######################################## Dense Subgraphs ###########################################

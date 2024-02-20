@@ -8,7 +8,7 @@ def to_sparse(A):
 
 PATH = 'elliptic_bitcoin_dataset/original'
 
-def make_clean_dataset(timestep=1, OUT_DIR='elliptic_bitcoin_dataset'):
+def make_clean_dataset(timestep=1, OUT_DIR='elliptic_bitcoin_dataset', train=False):
     dfClasses = pd.read_csv(f'{PATH}/elliptic_txs_classes.csv')
     dfEdgelist= pd.read_csv(f'{PATH}/elliptic_txs_edgelist.csv')
     dfFeatures= pd.read_csv(f'{PATH}/elliptic_txs_features.csv')
@@ -35,10 +35,12 @@ def make_clean_dataset(timestep=1, OUT_DIR='elliptic_bitcoin_dataset'):
     labels = df.set_index('id').loc[nodes]['class'].reset_index(drop=True)
     
     # save data to files
-    scipy.sparse.save_npz(f'{OUT_DIR}/A.npz', to_sparse(A))
-    scipy.sparse.save_npz(f'{OUT_DIR}/metadata.npz', to_sparse(metadata))
-    labels.to_csv(f'{OUT_DIR}/labels.csv')
+    suffix = '_train' if train else ''
+    scipy.sparse.save_npz(f'{OUT_DIR}/A{suffix}.npz', to_sparse(A))
+    scipy.sparse.save_npz(f'{OUT_DIR}/metadata{suffix}.npz', to_sparse(metadata))
+    labels.to_csv(f'{OUT_DIR}/labels{suffix}.csv')
 
 
 if __name__ == "__main__":
-    make_clean_dataset()
+    # make_clean_dataset(timestep=1, train=True)
+    make_clean_dataset(timestep=3, train=False)

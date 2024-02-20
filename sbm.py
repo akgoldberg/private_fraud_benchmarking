@@ -26,9 +26,14 @@ def gen_random_sbm(sbm_params, sparse=True):
     else:
         A_out = A + A.T
     labels = np.zeros(n0+n1)
-    labels[n0+1:] = 1
+    labels[n0:] = 1
     
     return A_out, labels
+
+# simulate adjacency matrix A as an sbm
+def simulate_sbm(A, labels):
+    A, labels = gen_random_sbm(est_sbm_params(A, labels))
+    return A, labels, None
 
 # Get sbm params fixing rate of fraud r, expected degree of fraud nodes at d0 + d01 and benign at d0 + r*d01
 # r is rate of ratio of fraud to benign nodes, d0 is expected # of edges benign<->benign, d1 is expected # of edges fraud<->fraud, d01 is expected # of edges benign->fraud
@@ -47,3 +52,14 @@ def from_sbm_params(sbm_params):
     d1 = p1 * (n1-1)
     d01 = p01 * n0
     return n0, d0, d1, d01, r
+
+# Estimate sbm params from adjacency matrix (non-private)
+def est_sbm_params(A, labels):
+    ind0 = np.where(labels != 1)[0]
+    ind1 = np.where(labels == 1)[0]
+    n0 = len(ind0)
+    n1 = len(ind1)
+    p0 = np.mean(A[ind0][:,ind0])
+    p1 = np.mean(A[ind1][:,ind1])
+    p01 = np.mean(A[ind0][:,ind1])
+    return (n0, n1, p0, p1, p01)
