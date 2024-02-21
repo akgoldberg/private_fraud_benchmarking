@@ -6,13 +6,8 @@ from fraud_detector_implementations.telltail_matlab.run_telltail import run_tell
 import dsd 
 import networkx as nx
 import igraph as ig 
+from helpers import to_igraph
 
-def to_igraph(A):
-    A = scipy.sparse.coo_matrix(A)
-    edges = list(zip(A.row, A.col))
-    g = ig.Graph(n=A.shape[0])
-    g.add_edges(edges)
-    return g
 
 def score_random(A):
     return np.random.rand(A.shape[0])

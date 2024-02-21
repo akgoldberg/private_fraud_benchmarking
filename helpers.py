@@ -1,5 +1,7 @@
 import numpy as np
 import itertools
+import scipy
+import igraph as ig
 
 #########################################################################
 # auc_score
@@ -54,3 +56,10 @@ def permute_vetices(A, labels):
     labels_new = labels[perm]
 
     return A_new, labels_new
+
+def to_igraph(A):
+    A = scipy.sparse.coo_matrix(A)
+    edges = list(zip(A.row, A.col))
+    g = ig.Graph(n=A.shape[0])
+    g.add_edges(edges)
+    return g
