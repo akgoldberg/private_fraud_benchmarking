@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import scipy
+import pickle
+from sbm import from_sbm_params
 
 ### YELP FRAUD ###
 # https://paperswithcode.com/sota/fraud-detection-on-yelp-fraud
@@ -40,11 +42,10 @@ def load_FDcomp_data(PATH = 'datasets/FDcomp_dataset', kind='homo'):
 
 ### PEER REVIEW FRAUD ### 
 # https://arxiv.org/pdf/2207.02303.pdf 
-def load_peer_review_data(PATH = 'datasets/peer_review_synthetic_dataset', train=False):
-    suffix = '_train' if train else ''
+def load_peer_review_data(PATH = 'datasets/peer_review_synthetic_dataset'):
     # undirected graph nodes are papers edges are citations
-    A =  scipy.sparse.load_npz(f'{PATH}/A{suffix}.npz')
-    labels = np.loadtxt(f'{PATH}/labels{suffix}.csv')# 0 is benign, 1 is fraud, -1 is unknown
+    A =  scipy.sparse.load_npz(f'{PATH}/A.npz')
+    labels = np.loadtxt(f'{PATH}/labels.csv')# 0 is benign, 1 is fraud, -1 is unknown
     return A.astype(float), labels, None
 
 ### BITCOIN FRAUD ### 
@@ -56,6 +57,25 @@ def load_elliptic_data(PATH = 'datasets/elliptic_bitcoin_dataset', train=False):
     metadata = scipy.sparse.load_npz(f'{PATH}/metadata{suffix}.npz')
     labels = pd.read_csv(f'{PATH}/labels{suffix}.csv')['class'].values # 0 is benign, 1 is fraud, -1 is unknown
     return A, labels, metadata
+
+### SBM DATA ###
+def load_sbms(print_params=False):
+    data = pickle.load(open('datasets/sbms.pkl', 'rb'))
+    sbm1 = data['amazon_sbm']
+    sbm2 = data['peer_review_sbm']
+    graphs1 = [(A,labels,None) for A,labels in sbm1['graphs']]
+    graphs2 = [(A,labels,None) for A,labels in sbm2['graphs']]
+
+    if print_params:
+        print('Amazon SBM params:', sbm1['sbm_params'])
+        params2 = from_sbm_params(sbm1['sbm_params'])
+        print(f'Amazon SBM params: n0: {params2[0]}, d0: {params2[1]}, d1: {round(params2[2], 4)}, d01: {round(params2[3], 4)}, r: {round(params2[4], 4)}')
+
+        print('Peer Review SBM params:', sbm2['sbm_params'])
+        params2 = from_sbm_params(sbm2['sbm_params'])
+        print(f'Peer Review SBM params: n0: {params2[0]}, d0: {params2[1]}, d1: {round(params2[2], 4)}, d01: {round(params2[3], 4)}, r: {round(params2[4], 4)}')
+
+    return graphs1, graphs2
 
 def summarize_data(A, labels, metadata):
     return {
@@ -73,15 +93,13 @@ if __name__ == '__main__':
     # Load validation data and print summary statistics
     A, labels, metadata = load_yelp_data(train=True)
     d['yelp'] = summarize_data(A, labels, metadata)
-    A, labels, metadata = load_peer_review_data(train=True)
-    d['peer_review'] = summarize_data(A, labels, metadata)
     A, labels, metadata = load_elliptic_data(train=True)
     d['elliptic'] = summarize_data(A, labels, metadata)
     print('=== Validation Datasets ===')
     print(pd.DataFrame(d))
     # print data frame as latex table
     print(pd.DataFrame(d).to_latex(float_format="%.2f"))
-
+    load_sbms(print_params=True)
     
     d = {}
     # Testing loading of data
@@ -91,12 +109,12 @@ if __name__ == '__main__':
     d['amazon'] = summarize_data(A, labels, metadata)
     A, labels, metadata = load_FDcomp_data()  
     d['FDcomp'] = summarize_data(A, labels, metadata)
-    A, labels, metadata = load_peer_review_data(train=False)
+    A, labels, metadata = load_peer_review_data()
     d['peer_review'] = summarize_data(A, labels, metadata)
     A, labels, metadata = load_elliptic_data(train=False)
     d['elliptic'] = summarize_data(A, labels, metadata)
     print('=== Test Datasets ===')
     print(pd.DataFrame(d))
-    print(pd.DataFrame(d).to_latex())
+    print(pd.DataFrame(d).to_latex(float_format="%.2f"))
 
 

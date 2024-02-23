@@ -2,7 +2,6 @@
 
 import numpy as np
 import scipy
-from fraud_detector_implementations.telltail_matlab.run_telltail import run_telltail
 import dsd 
 import networkx as nx
 import igraph as ig 
@@ -116,10 +115,5 @@ def agg_scores(score_list, weights=None, agg_func=np.sum):
         weights = np.ones(len(score_list)) / len(score_list)
     norm_scores = [weights[i] * (scores / replace_zero(max(scores))) for i, scores in enumerate(score_list)]
     return agg_func(norm_scores, axis=0)
-
-
-###################################################
-############## OddBall ############################
-###################################################
 
 
