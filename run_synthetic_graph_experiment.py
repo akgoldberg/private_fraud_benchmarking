@@ -22,25 +22,16 @@ def generate_synthetic_datasets(eps, deg_cutoff_rate, iters=10, non_private=Fals
     out['params'] = {'eps': eps, 'deg_cutoff_rate': deg_cutoff_rate, 'iters': iters, 'non_private': non_private}
     out['data'] = {}
 
-    all_aucs = []
-
     if run_parallel:
         args_list = [(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data) for i in range(iters)]
-        result_list = Parallel(n_jobs=8, backend='threading')(delayed(run_single_iter_generate_synthetic_datasets)(*args) for args in args_list)
-        for data, aucs_df in result_list:
+        result_list = Parallel(n_jobs=4)(delayed(run_single_iter_generate_synthetic_datasets)(*args) for args in args_list)
+        for data, _ in result_list:
              out['data'][i] = data 
-             all_aucs.append(aucs_df)
     else: 
         for i in range(iters):
-            data, aucs_df = run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data)
+            data, _ = run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data)
             out['data'][i] = data
-            all_aucs.append(aucs_df)
     
-    aucs_df = pd.concat(all_aucs)
-    # save aucs to csv
-    aucs_file = f'synthetic_graphs/aucs_{int(100*deg_cutoff_rate)}_{int(eps)}.csv'
-    aucs_df.to_csv(aucs_file, index=False)
-
     return out
 
 def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only=False, non_private=False, save_data=False):
@@ -67,7 +58,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
             A = scipy.sparse.load_npz(A_name)
             labels = np.loadtxt(labels_name, delimiter=',')
             graphs_sbm, params_sbm, params_sbm_true = [(A, labels)], None, None
-            time_sbm = None
+            time_sbm = 0
         else:
             t = time.time()
             graphs_sbm, params_sbm, params_sbm_true = sbm_dp.run_generate_synthetic_sbm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, stats_only=statistics_only)
@@ -86,7 +77,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 A = scipy.sparse.load_npz(A_name)
                 labels = np.loadtxt(labels_name, delimiter=',')
                 graphs_agm_simp, params_agm_simp, params_agm_simp_true = [(A, labels)], None, None
-                time_agm_simp = None
+                time_agm_simp = 0
             else:
                 t = time.time()
                 graphs_agm_simp, params_agm_simp, params_agm_simp_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=False, stats_only=statistics_only)
@@ -100,7 +91,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 A = scipy.sparse.load_npz(A_name)
                 labels = np.loadtxt(labels_name, delimiter=',')
                 graphs_agm, params_agm, params_agm_true = [(A, labels)], None, None
-                time_agm = None
+                time_agm = 0
             else:
                 t = time.time()
                 graphs_agm, params_agm, params_agm_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=True, stats_only=statistics_only)
@@ -113,7 +104,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
             A = scipy.sparse.load_npz(A_name)
             labels = np.loadtxt(labels_name, delimiter=',')
             graphs_topm, params_topm, params_topm_true = [(A, labels)], None, None
-            time_topm = None
+            time_topm = 0
         else:
             t = time.time()
             graphs_topm, params_topm, params_topm_true = topmfilter.run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, non_private=non_private)
@@ -150,6 +141,14 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 aucs['iter'] = i
                 aucs['non_private'] = non_private
                 aucs_df = pd.DataFrame(aucs, index=[0])
+
+                # dump to csv each row
+                aucs_file = f'synthetic_graphs/aucs_{int(100*deg_cutoff_rate)}_{int(eps)}_{i}.csv'
+                if os.path.exists(aucs_file):
+                    aucs_df.to_csv(aucs_file, mode='a', header=False, index=False)
+                else:    
+                    aucs_df.to_csv(aucs_file, index=False)
+
                 all_aucs.append(aucs_df)
         
         return iter_out, pd.concat(all_aucs)

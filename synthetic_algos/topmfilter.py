@@ -43,7 +43,7 @@ def run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, n_samples=1, f
     one_cells = A_trunc[row_ind,col_ind]
     n1_orig = one_cells.sum()
 
-    one_cells += add_laplace_noise(eps_adj, delta, sens, A, labels, deg_cutoff, truncate_fraud=fraud_private, n_samples=one_cells.shape[1])
+    one_cells = one_cells.astype(float) + add_laplace_noise(eps_adj, delta, sens, A, labels, deg_cutoff, truncate_fraud=fraud_private, n_samples=one_cells.shape[1])
     one_cells = (one_cells > theta).astype(int)
     n1 = one_cells.sum()
     # print('n1:', n1)

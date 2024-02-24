@@ -14,3 +14,5 @@ test.py
 synthetic_graphs/
 datasets/sbms.pkl
 __MACOSX/
+results/figures/
+results/synthetic_*
