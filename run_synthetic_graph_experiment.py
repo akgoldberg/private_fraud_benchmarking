@@ -186,15 +186,15 @@ def main():
     # return 
 
 
-    # eps_values = [1, 5, 10]
-    # cutoff_rate = 1
-    # results = generate_synthetic_data_parallel(eps_values, cutoff_rate)
-    # for i, eps in enumerate(eps_values):
-    #     pickle.dump(results[i].get(), open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+    eps_values = [1, 5, 10]
+    cutoff_rate = 1
+    results = generate_synthetic_data_parallel(eps_values, cutoff_rate)
+    for i, eps in enumerate(eps_values):
+        pickle.dump(results[i].get(), open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
-    # # run without privacy
-    # out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
-    # pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
+    # run without privacy
+    out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
+    pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
 
 
     # run with privacy
