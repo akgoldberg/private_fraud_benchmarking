@@ -24,12 +24,12 @@ def generate_synthetic_datasets(eps, deg_cutoff_rate, iters=10, non_private=Fals
 
     if run_parallel:
         args_list = [(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data) for i in range(iters)]
-        result_list = Parallel(n_jobs=4)(delayed(run_single_iter_generate_synthetic_datasets)(*args) for args in args_list)
-        for data, _ in result_list:
+        result_list = Parallel(n_jobs=2)(delayed(run_single_iter_generate_synthetic_datasets)(*args) for args in args_list)
+        for data in result_list:
              out['data'][i] = data 
     else: 
         for i in range(iters):
-            data, _ = run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data)
+            data = run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data)
             out['data'][i] = data
     
     return out
@@ -149,9 +149,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 else:    
                     aucs_df.to_csv(aucs_file, index=False)
 
-                all_aucs.append(aucs_df)
-        
-        return iter_out, pd.concat(all_aucs)
+    return iter_out
 
 def test_statistic_error(eps, deg_cutoff_rate, iters=10):
     d = load_validation_data()
@@ -188,13 +186,13 @@ def main():
 
 
     # run with privacy
-    for eps in [1., 5.]:
+    for eps in [5.]:
         cutoff_rate = 1.
         ### NEED TO USE BEST CUTOFF RATE FOR EACH EPS, DATASET
         print('=====================================================================')
         print('Running synthetic data generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
         print('=====================================================================')
-        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=True)
+        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False)
         pickle.dump(out, open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
     # eps = 1.
