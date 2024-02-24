@@ -41,7 +41,7 @@ def run_generate_synthetic_agm(A, labels, eps, deg_cutoff, fraud_private=False, 
             n_triangles = 0
 
         sbm_print = [round(s, 4) for s in sbm_params[2:]]
-        # print(f'Estimated SBM params: {sbm_print}, Estimated avg degree: {round(degree_seq.mean(), 2)}, Estimated n zero degree: {len(degree_seq[degree_seq==0])}, Estimated triangles: {n_triangles}')
+        print(f'Estimated SBM params: {sbm_print}, Estimated avg degree: {round(degree_seq.mean(), 2)}, Estimated n zero degree: {len(degree_seq[degree_seq==0])}, Estimated triangles: {n_triangles}')
     # sample graphs
     graphs = []
 
