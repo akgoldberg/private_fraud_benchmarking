@@ -6,7 +6,7 @@ import os
 import scipy
 sys.path.append('synthetic_algos')
 import pandas as pd
-from multiprocessing import Pool
+from joblib import Parallel, delayed
 
 from synthetic_algos import attr_graph, sbm_dp, topmfilter
 from run_partition_agg_experiment import load_validation_data, eval_all_fraud_detectors
@@ -22,18 +22,24 @@ def generate_synthetic_datasets(eps, deg_cutoff_rate, iters=10, non_private=Fals
     out['params'] = {'eps': eps, 'deg_cutoff_rate': deg_cutoff_rate, 'iters': iters, 'non_private': non_private}
     out['data'] = {}
 
-    if run_parallel:
-        pool = Pool(processes=iters)
-
-    for i in range(iters):
-        if run_parallel:
-            out['data'][i] = pool.apply_async(run_single_iter_generate_synthetic_datasets, (d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data))
-        else:
-            out['data'][i] = run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only=statistics_only, non_private=non_private, save_data=save_data)
+    all_aucs = []
 
     if run_parallel:
-        pool.close()
-        pool.join()
+        args_list = [(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data) for i in range(iters)]
+        result_list = Parallel(n_jobs=8, backend='threading')(delayed(run_single_iter_generate_synthetic_datasets)(*args) for args in args_list)
+        for data, aucs_df in result_list:
+             out['data'][i] = data 
+             all_aucs.append(aucs_df)
+    else: 
+        for i in range(iters):
+            data, aucs_df = run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, statistics_only, non_private, save_data)
+            out['data'][i] = data
+            all_aucs.append(aucs_df)
+    
+    aucs_df = pd.concat(all_aucs)
+    # save aucs to csv
+    aucs_file = f'synthetic_graphs/aucs_{int(100*deg_cutoff_rate)}_{int(eps)}.csv'
+    aucs_df.to_csv(aucs_file, index=False)
 
     return out
 
@@ -43,7 +49,9 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
     iter_out = {}
 
     for name, data in d.items():
-        print('Running on', name)
+        print(f'Running iter {i} on {name}')
+        sys.stdout.flush()
+
         if name in ['amazon_sbm', 'peer_review_sbm']:
             data = data[i % len(data)]
         A, labels, _ = data
@@ -116,9 +124,11 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                     'attr_graph': {'params': params_agm, 'params_true': params_agm_true, 'time': time_agm},
                     'topmfilter': {'params': params_topm, 'params_true': params_topm_true, 'time': time_topm}}
 
-        print(f'Iter {i}: Generating synthetic graphs for {name} took {(time_agm + time_agm_simp + time_sbm + time_topm) / 60} minutes.')
+        print(f'Iter {i}: Generating synthetic graphs on {name} took {(time_agm + time_agm_simp + time_sbm + time_topm) / 60} minutes.')
+        sys.stdout.flush()
 
         if not statistics_only: # evaluate AUCs
+            all_aucs = []
             for algo, graphs in zip(['sbm_dp', 'attr_graph_simp', 'attr_graph', 'topmfilter'], [graphs_sbm, graphs_agm_simp, graphs_agm, graphs_topm]):
                 if graphs is None:
                     continue
@@ -140,14 +150,9 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 aucs['iter'] = i
                 aucs['non_private'] = non_private
                 aucs_df = pd.DataFrame(aucs, index=[0])
-                # save aucs as a row in a csv
-                aucs_file = f'synthetic_graphs/aucs_{int(100*deg_cutoff_rate)}_{int(eps)}.csv'
-                if os.path.exists(aucs_file):
-                    aucs_df.to_csv(aucs_file, mode='a', header=False, index=False)
-                else:
-                    aucs_df.to_csv(aucs_file, index=False)
+                all_aucs.append(aucs_df)
         
-        return iter_out
+        return iter_out, pd.concat(all_aucs)
 
 def test_statistic_error(eps, deg_cutoff_rate, iters=10):
     d = load_validation_data()
@@ -165,16 +170,6 @@ def test_statistic_error(eps, deg_cutoff_rate, iters=10):
                 data = data[i % len(data)]
             A, labels, _ = data
 
-  # run generation of synthetic data in parallel for values of eps = [1,5,10] and cutoff_rate=1
-def generate_synthetic_data_parallel(eps_values, cutoff_rate):
-    pool = Pool(processes=len(eps_values))
-    results = []
-    for eps in eps_values:
-        result = pool.apply_async(generate_synthetic_datasets, (eps, cutoff_rate, 10, False))
-        results.append(result)
-    pool.close()
-    pool.join()
-    return results
 
 def main():
     # get sufficient statistics for each algorithm
@@ -188,15 +183,9 @@ def main():
     # return 
 
 
-    eps_values = [1, 5, 10]
-    cutoff_rate = 1
-    results = generate_synthetic_data_parallel(eps_values, cutoff_rate)
-    for i, eps in enumerate(eps_values):
-        pickle.dump(results[i].get(), open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
-
-    # run without privacy
-    out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
-    pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
+    # # run without privacy
+    # out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
+    # pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
 
 
     # run with privacy
