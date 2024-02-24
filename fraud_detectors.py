@@ -2,7 +2,6 @@
 
 import numpy as np
 import scipy
-import dsd 
 import networkx as nx
 import igraph as ig 
 from helpers import to_igraph
@@ -89,16 +88,6 @@ def score_by_truncate_svd(A, rank, agg_method='sum', sparse=True):
     except:
         return np.ones(np.shape(A)[0])
     
-####################################################################################################
-######################################## Dense Subgraphs ###########################################
-####################################################################################################
-    
-def score_dense_subgraph(A):
-    g = nx.from_scipy_sparse_array(A)
-    inds = dsd.greedy_charikar(g)   
-    scores = np.zeros(A.shape[0])
-    scores[inds] = 1
-    return scores 
     
 ####################################
 ######## Combination of Scores #####

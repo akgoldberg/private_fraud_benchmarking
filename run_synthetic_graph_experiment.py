@@ -176,48 +176,51 @@ def generate_synthetic_data_parallel(eps_values, cutoff_rate):
 
 def main():
     # get sufficient statistics for each algorithm
-    for eps in [1., 2., 5., 10.]:
-        for cutoff_rate in [0.25]:
-            print('=====================================================================')
-            print('Running synthetic data stats generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
-            print('=====================================================================')
-            out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, statistics_only=True)
-            pickle.dump(out, open(f'results/synthetic_stats_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
-    return 
+    # for eps in [1., 2., 5., 10.]:
+    #     for cutoff_rate in [0.25]:
+    #         print('=====================================================================')
+    #         print('Running synthetic data stats generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
+    #         print('=====================================================================')
+    #         out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, statistics_only=True)
+    #         pickle.dump(out, open(f'results/synthetic_stats_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+    # return 
 
 
-    eps_values = [1, 5, 10]
-    cutoff_rate = 1
-    results = generate_synthetic_data_parallel(eps_values, cutoff_rate)
-    for i, eps in enumerate(eps_values):
-        pickle.dump(results[i].get(), open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+    # eps_values = [1, 5, 10]
+    # cutoff_rate = 1
+    # results = generate_synthetic_data_parallel(eps_values, cutoff_rate)
+    # for i, eps in enumerate(eps_values):
+    #     pickle.dump(results[i].get(), open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
-    # run without privacy
-    out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
-    pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
+    # # run without privacy
+    # out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
+    # pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
 
 
     # run with privacy
     for eps in [1., 5.]:
+        cutoff_rate = 1.
         ### NEED TO USE BEST CUTOFF RATE FOR EACH EPS, DATASET
+        print('=====================================================================')
         print('Running synthetic data generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
-        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False)
+        print('=====================================================================')
+        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=True)
         pickle.dump(out, open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
-    eps = 1.
-    cutoff_rate = 1.
-    out = generate_synthetic_datasets(1., 1., iters=10, non_private=False)
-    pickle.dump(out, open('results/synthetic11.pkl', 'wb'))
+    # eps = 1.
+    # cutoff_rate = 1.
+    # out = generate_synthetic_datasets(1., 1., iters=10, non_private=False)
+    # pickle.dump(out, open('results/synthetic11.pkl', 'wb'))
 
-    eps = 2.
-    cutoff_rate = 1.
-    out = generate_synthetic_datasets(1., 1., iters=10, non_private=False)
-    pickle.dump(out, open('results/synthetic21.pkl', 'wb'))
+    # eps = 2.
+    # cutoff_rate = 1.
+    # out = generate_synthetic_datasets(1., 1., iters=10, non_private=False)
+    # pickle.dump(out, open('results/synthetic21.pkl', 'wb'))
 
-    eps = 10.
-    cutoff_rate = 1.
-    out = generate_synthetic_datasets(1., 1., iters=10, non_private=False)
-    pickle.dump(out, open('results/synthetic101.pkl', 'wb'))
+    # eps = 10.
+    # cutoff_rate = 1.
+    # out = generate_synthetic_datasets(1., 1., iters=10, non_private=False)
+    # pickle.dump(out, open('results/synthetic101.pkl', 'wb'))
 
     #  eps = 1.
     # cutoff_rate = 0.75

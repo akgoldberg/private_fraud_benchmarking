@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import networkx as nx
 import math 
 from operator import itemgetter
