@@ -23,7 +23,7 @@ def load_yelp_data(PATH = 'datasets/yelp_dataset', kind='homo', subsetted=True, 
 #### AMAZON FRAUD ###
 def load_amazon_data(PATH = 'datasets/amazon_dataset', kind='homo'):
     assert kind in ('homo', 'net_upu', 'net_usu', 'net_uvu')
-    mat = scipy.io.loadmat(f'{PATH}/amazon.mat')
+    mat = scipy.io.loadmat(f'{PATH}/Amazon.mat')
     A = mat[kind]
     metadata = mat['features']
     labels = mat['label'].reshape(-1) # 0 is benign, 1 is fraud, -1 is unknown

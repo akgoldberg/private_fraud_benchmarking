@@ -12,3 +12,4 @@ testing.ipynb
 fraud_detector_implementations/telltail_matlab/
 test.py
 synthetic_graphs/
+datasets/sbms.pkl
