@@ -51,7 +51,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
         max_degree = max(A.sum(axis=0).A1[labels==0])
         deg_cutoff = int(max_degree * deg_cutoff_rate)
 
-        # print(f'Running sbm_dp on {name}')
+        print(f'Running sbm_dp on {name}')
         A_name, labels_name = get_filenames(name, 'sbm_dp', i, deg_cutoff_rate, eps)
         if not statistics_only and os.path.exists(A_name) and os.path.exists(labels_name):
             # print('Data already exists, loading from file')
@@ -69,7 +69,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
             graphs_agm_simp, params_agm_simp, params_agm_simp_true = None, None, None
             graphs_agm, params_agm, params_agm_true = None, None, None
         else: 
-            # print(f'Running attr_graph no triangles on {name}')
+            print(f'Running attr_graph no triangles on {name}')
 
             A_name, labels_name = get_filenames(name, 'attr_graph_simp', i, deg_cutoff_rate, eps)
             if not statistics_only and os.path.exists(A_name) and os.path.exists(labels_name):
@@ -83,7 +83,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 graphs_agm_simp, params_agm_simp, params_agm_simp_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=False, stats_only=statistics_only)
                 time_agm_simp = time.time() - t
 
-            # print(f'Running attr_graph on {name}')
+            print(f'Running attr_graph on {name}')
 
             A_name, labels_name = get_filenames(name, 'attr_graph', i, deg_cutoff_rate, eps)
             if not statistics_only and os.path.exists(A_name) and os.path.exists(labels_name):
@@ -97,7 +97,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 graphs_agm, params_agm, params_agm_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=True, stats_only=statistics_only)
                 time_agm = time.time() - t
         
-        # print(f'Running topmfilter on {name}')
+        print(f'Running topmfilter on {name}')
         A_name, labels_name = get_filenames(name, 'topmfilter', i, deg_cutoff_rate, eps)
         if not statistics_only and os.path.exists(A_name) and os.path.exists(labels_name):
             # print('Data already exists, loading from file')
