@@ -116,6 +116,8 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                     'attr_graph': {'params': params_agm, 'params_true': params_agm_true, 'time': time_agm},
                     'topmfilter': {'params': params_topm, 'params_true': params_topm_true, 'time': time_topm}}
 
+        print(f'Iter {i}: Generating synthetic graphs for {name} took {(time_agm + time_agm_simp + time_sbm + time_topm) / 60} minutes.')
+
         if not statistics_only: # evaluate AUCs
             for algo, graphs in zip(['sbm_dp', 'attr_graph_simp', 'attr_graph', 'topmfilter'], [graphs_sbm, graphs_agm_simp, graphs_agm, graphs_topm]):
                 if graphs is None:
