@@ -11,6 +11,7 @@ def run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, n_samples=1, f
         return [(A, labels)], {'n_edges': A.nnz /2.}, {'n_edges': A.nnz /2.}
     
     A_trunc, labels_trunc = truncate_graph(A, labels, deg_cutoff, fraud_private)
+    A_trunc_init = A_trunc.copy()
 
     # estimate number of edges 
     eps_count = eps / 10.
@@ -24,14 +25,14 @@ def run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, n_samples=1, f
     S = get_noise_magnitude(eps_adj, delta, sens, A, labels, deg_cutoff, 'laplace', fraud_private)
     eps_t = np.log(n*(n-1)/(2*m) - 1)
     eps_actual = eps_adj / S
-    print(f'Eps actual: {eps_actual}')
+    # print(f'Eps actual: {eps_actual}')
 
     if eps_actual < eps_t:
         theta = (1 / (2*eps_actual)) * np.log(n*(n-1)/(2*m) - 1)
     else:
         theta = (1/eps_actual) * (np.log(n*(n-1)/(4*m) + 0.5*(np.exp(eps_actual) -1)))
     
-    print('Threshold:', theta)
+    # print('Threshold:', theta)
 
     A_out = np.zeros(A_trunc.shape)
 
@@ -45,13 +46,13 @@ def run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, n_samples=1, f
     one_cells += add_laplace_noise(eps_adj, delta, sens, A, labels, deg_cutoff, truncate_fraud=fraud_private, n_samples=one_cells.shape[1])
     one_cells = (one_cells > theta).astype(int)
     n1 = one_cells.sum()
-    print('n1:', n1)
-    print('Processing 1-cells')
+    # print('n1:', n1)
+    # print('Processing 1-cells')
     
     # process 0-cells
-    print('Processing 0-cells')
+    # print('Processing 0-cells')
     n0 = m  - n1
-    print(f'Adding {n0} edges')
+    # print(f'Adding {n0} edges')
     while n0 > 0:
         i = np.random.randint(0, n)
         j = np.random.randint(0, n)
@@ -62,7 +63,11 @@ def run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, n_samples=1, f
         A_out[j,i] = 1
         n0 -= 1
     
-    return [(A_out, labels_trunc)], {'n_edges': m}, {'n_edges': A.nnz /2.}
+    # get total number of flipped edges = number flipped in truncation + number flipped by top-m
+    n_flipped_topm = np.abs(A_trunc_init - A_out).sum() / 2.
+    n_flipped_trunc = (A.nnz - A_trunc_init.nnz) / 2.
+    
+    return [(A_out, labels_trunc)], {'n_edges': m}, {'n_edges': A.nnz /2., 'n_flipped_topm': n_flipped_topm, 'n_flipped_trunc': n_flipped_trunc, 'n_flipped': n_flipped_topm + n_flipped_trunc}
 
 
 if __name__ == '__main__':
@@ -71,6 +76,7 @@ if __name__ == '__main__':
     print(params)
     A, labels = gen_random_sbm(params)
     eps = 10.
-    deg_cutoff = 25
+    deg_cutoff = 10
     
-    A_out, labels_out, params = run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, fraud_private=False, delta=1e-6)
+    graphs, params, params_exact = run_generate_synthetic_topmfilter(A, labels, eps, deg_cutoff, fraud_private=False, delta=1e-6)
+    print(params_exact)

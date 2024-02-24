@@ -47,14 +47,14 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
     eps_count = eps / 10.
     n0, n1 = estimate_fraud_count(labels, eps_count)
 
-    print(f'Estimated benign count: {n0}, Estimated fraud count: {n1}')
+    # print(f'Estimated benign count: {n0}, Estimated fraud count: {n1}')
     
     # estimate probabilities within and between fraud and benign nodes
     eps_probs = eps - eps_count
     # truncate the graph
     trunc_A, trunc_labels = truncate_graph(A, labels, deg_cutoff, fraud_private)
 
-    print(f'Truncated {len(labels) - len(trunc_labels)} vertices')
+    # print(f'Truncated {len(labels) - len(trunc_labels)} vertices')
 
     ind0 = np.where(trunc_labels != 1)[0]
     ind1 = np.where(trunc_labels == 1)[0]
@@ -63,7 +63,7 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
     n11 = np.sum(trunc_A[ind1][:,ind1]) / 2
     n01 = np.sum(trunc_A[ind0][:,ind1]) 
 
-    print(f'True n00: {n00}, True n11: {n11}, True n01: {n01}')
+    # print(f'True n00: {n00}, True n11: {n11}, True n01: {n01}')
 
 
     sens = deg_cutoff
@@ -96,13 +96,13 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
             n00 += add_cauchy_noise(eps0, sens, A, labels, deg_cutoff, truncate_fraud=fraud_private)
             n01 += add_cauchy_noise(eps1, sens, A, labels, deg_cutoff, truncate_fraud=fraud_private)
     
-    print(f'Estimated n00: {n00}, Estimated n11: {n11}, Estimated n01: {n01}')
+    # print(f'Estimated n00: {n00}, Estimated n11: {n11}, Estimated n01: {n01}')
 
     p0 = n00 / (n0 * (n0 - 1) / 2)
     p1 = n11 / (n1 * (n1 - 1) / 2)
     p01 = n01 / (n0 * n1)
 
-    print(f'Estimated p0: {p0}, Estimated p1: {p1}, Estimated p01: {p01}')
+    # print(f'Estimated p0: {p0}, Estimated p1: {p1}, Estimated p01: {p01}')
 
     return (n0, n1, p0, p1, p01)
 

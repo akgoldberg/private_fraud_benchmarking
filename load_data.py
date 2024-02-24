@@ -80,7 +80,8 @@ def load_sbms(print_params=False):
 def summarize_data(A, labels, metadata):
     return {
         'n_vertices':A.shape[0],
-        'n_edges': A.nnz,
+        'n_edges': A.nnz / 2.,
+        'edge_density': round(100*A.nnz / (A.shape[0] * (A.shape[0] - 1)), 2),
         'n_fraud': sum(labels == 1),
         'max_degree': max(A.sum(axis=0).A1),
         'avg_degree': A.sum() / A.shape[0],

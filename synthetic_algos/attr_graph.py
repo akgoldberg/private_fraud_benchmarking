@@ -42,7 +42,7 @@ def run_generate_synthetic_agm(A, labels, eps, deg_cutoff, fraud_private=False, 
             n_triangles = 0
 
         sbm_print = [round(s, 4) for s in sbm_params[2:]]
-        print(f'Estimated SBM params: {sbm_print}, Estimated avg degree: {round(degree_seq.mean(), 2)}, Estimated n zero degree: {len(degree_seq[degree_seq==0])}, Estimated triangles: {n_triangles}')
+        # print(f'Estimated SBM params: {sbm_print}, Estimated avg degree: {round(degree_seq.mean(), 2)}, Estimated n zero degree: {len(degree_seq[degree_seq==0])}, Estimated triangles: {n_triangles}')
     # sample graphs
     graphs = []
 
@@ -108,7 +108,7 @@ def sample_tricycle_graph_attr(sbm_params, degree_seq, n_tri, iters=1000):
         
         A_old = A
 
-        print(f'Graph Sample Iteration {i}, Acceptance probabilities: {A}')
+        # print(f'Graph Sample Iteration {i}, Acceptance probabilities: {A}')
 
         E = sample_tricycle_graph(degree_seq, n_tri, X=labels, A=A) # re-sample edges
     
@@ -129,8 +129,8 @@ def sample_tricycle_graph(degree_seq, n_tri, X=None, A=None):
     iter = 0
     # sample edges until we have n_tri triangles
     while tau < n_tri and iter < max_iter:
-        if iter % 1000 == 0:
-            print(f'Triangle-Adding Iteration {iter}, Number of triangles: {tau}')
+        # if iter % 1000 == 0:
+            # print(f'Triangle-Adding Iteration {iter}, Number of triangles: {tau}')
         i = np.random.choice(v_list, p=pi) 
         N_i = neighbors(E_T, i)
 
@@ -163,7 +163,7 @@ def sample_tricycle_graph(degree_seq, n_tri, X=None, A=None):
                 tau += CN_ik - CN_qr
             else:
                 edges = edges[1:] + [(q,r)] 
-    print(f'Number of triangles: {tau}') 
+    # print(f'Number of triangles: {tau}') 
     return E_T 
 
 
