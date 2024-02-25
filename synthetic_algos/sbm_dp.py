@@ -65,7 +65,6 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
 
     # print(f'True n00: {n00}, True n11: {n11}, True n01: {n01}')
 
-
     sens = deg_cutoff
     if fraud_private:
         # weight eps by size of denominator
@@ -103,9 +102,9 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
     p01 = n01 / (n0 * n1)
 
     # clip lower to lower bounds of at least 0.1 expected edge between each group
-    lower_p0 = 0.1 / n00 
-    lower_p1 = 0.1 / n11 
-    lower_p01 = 0.1 / n00
+    lower_p0 = 0.1 / n0
+    lower_p1 = 0.1 / n1 
+    lower_p01 = 0.1 / n0
 
     p0 = np.clip(p0, lower_p0, 0.8)
     # p1 = np.clip(p1, lower_p1, 0.8) # dont clip since no noise added

@@ -12,8 +12,8 @@ from synthetic_algos import attr_graph, sbm_dp, topmfilter
 from run_partition_agg_experiment import load_validation_data, eval_all_fraud_detectors
 
 def get_filenames(data_name, algo, i, deg_cutoff_rate, eps):
-    A_file = f'synthetic_graphs/A_{data_name}_train_{algo}_{i}_{int(100*deg_cutoff_rate)}_{int(eps)}.npz'
-    labels_file = f'synthetic_graphs/labels_{data_name}_train_{algo}_{i}_{int(100*deg_cutoff_rate)}_{int(eps)}.csv'
+    A_file = f'synthetic_graphs/graphs/A_{data_name}_train_{algo}_{i}_{int(100*deg_cutoff_rate)}_{int(eps)}.npz'
+    labels_file = f'synthetic_graphs/graphs/labels_{data_name}_train_{algo}_{i}_{int(100*deg_cutoff_rate)}_{int(eps)}.csv'
     return A_file, labels_file
 
 def generate_synthetic_datasets(eps, deg_cutoff_rate, iters=10, non_private=False, statistics_only=False, save_data=False, run_parallel=False):
@@ -186,7 +186,7 @@ def main():
 
 
     # run with privacy
-    for eps in [5.]:
+    for eps in [1.]:
         cutoff_rate = 1.
         ### NEED TO USE BEST CUTOFF RATE FOR EACH EPS, DATASET
         print('=====================================================================')
