@@ -102,9 +102,14 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
     p1 = n11 / (n1 * (n1 - 1) / 2)
     p01 = n01 / (n0 * n1)
 
-    p0 = np.clip(p0, 0, 0.8)
-    p1 = np.clip(p1, 0, 0.8)
-    p01 = np.clip(p01, 0, 0.8)
+    # clip lower to lower bounds of at least 0.1 expected edge between each group
+    lower_p0 = 0.1 / n00 
+    lower_p1 = 0.1 / n11 
+    lower_p01 = 0.1 / n00
+
+    p0 = np.clip(p0, lower_p0, 0.8)
+    p1 = np.clip(p1, lower_p1, 0.8)
+    p01 = np.clip(p01, lower_p01, 0.8)
 
     print(f'Estimated p0: {p0}, Estimated p1: {p1}, Estimated p01: {p01}')
 
