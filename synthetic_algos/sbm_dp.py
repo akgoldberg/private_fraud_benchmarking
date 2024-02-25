@@ -108,7 +108,7 @@ def estimate_sbm_params_dp(A, labels, eps, deg_cutoff, fraud_private = True, noi
     lower_p01 = 0.1 / n00
 
     p0 = np.clip(p0, lower_p0, 0.8)
-    p1 = np.clip(p1, lower_p1, 0.8)
+    # p1 = np.clip(p1, lower_p1, 0.8) # dont clip since no noise added
     p01 = np.clip(p01, lower_p01, 0.8)
 
     print(f'Estimated p0: {p0}, Estimated p1: {p1}, Estimated p01: {p01}')
