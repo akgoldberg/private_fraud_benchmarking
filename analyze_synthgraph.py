@@ -89,6 +89,31 @@ def get_n_truncated(cutoff_rate, split='val'):
     
     return out 
 
+def analyze_param_error(df):
+    # analyze for sbm_dp
+    df_sbm = df[df['synthetic_algo'] == 'sbm_dp'].copy()
+    df_sbm['rel_err_sbm'] = df_sbm['sbm_params_err'].abs().apply(sum) / df_sbm['sbm_params'].apply(sum)
+    rel_err_sbm = df_sbm.groupby(['eps', 'dataset', 'deg_cutoff_rate'])['rel_err_sbm'].mean().reset_index()
+    rel_err_sbm['rel_err_sbm'] = rel_err_sbm.rel_err_sbm.apply(lambda a: np.round(a, 3))
+
+    # analyze for attr_graph
+    df_attr = df[df['synthetic_algo'] == 'attr_graph'].copy()
+    df_attr['rel_err_sbm'] = df_attr['sbm_params_err'].abs().apply(sum) / df_attr['sbm_params'].apply(sum)
+    df_attr['rel_err_degree_seq'] = df_attr['degree_seq_err'].abs().apply(sum) / df_attr['degree_seq'].apply(sum)
+    df_attr['rel_err_ntriangles'] = df_attr['n_triangles_err'].abs() / df_attr['n_triangles']
+    rel_err_attr = df_attr.groupby(['eps', 'dataset', 'deg_cutoff_rate'])[['rel_err_sbm', 'rel_err_degree_seq', 'rel_err_ntriangles']].mean().reset_index()
+    rel_err_attr['rel_err_sbm'] = rel_err_attr.rel_err_sbm.apply(lambda a: np.round(a, 3))
+    rel_err_attr['rel_err_degree_seq'] = rel_err_attr.rel_err_degree_seq.apply(lambda a: np.round(a, 3))
+    rel_err_attr['rel_err_ntriangles'] = rel_err_attr.rel_err_ntriangles.apply(lambda a: np.round(a, 3))
+
+
+    # analyze for topmfilter 
+    df_topm = df[df['synthetic_algo'] == 'topmfilter'].copy()
+    df_topm['prop_edges_flipped'] = df_topm['n_edges_flipped'] / df_topm['n_edges']
+    rel_err_topm = df_topm.groupby(['eps', 'dataset', 'deg_cutoff_rate'])['prop_edges_flipped'].mean().reset_index()
+    
+    return rel_err_sbm, rel_err_attr, rel_err_topm
+
 def main():
     for cutoff_rate in [1., 0.75, 0.5]:
         print(f'========CUTOFF RATE {cutoff_rate}===========')

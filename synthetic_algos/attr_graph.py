@@ -49,14 +49,19 @@ def run_generate_synthetic_agm(A, labels, eps, deg_cutoff, fraud_private=False, 
         est_params = {'sbm_params': sbm_params, 'degree_seq': degree_seq, 'n_triangles': n_triangles}
         true_params = {'sbm_params': sbm_params_exact, 'degree_seq': degree_seq_exact, 'n_triangles': n_triangles_exact}
         return [], est_params, true_params
+    
+    est_params = {'sbm_params': sbm_params, 'degree_seq': degree_seq, 'n_triangles': n_triangles}
+    true_params = {'sbm_params': sbm_params_exact, 'degree_seq': degree_seq_exact, 'n_triangles': n_triangles_exact}
+
+    if sum(degree_seq) == 0:
+        print('Degree sequence is all zeros')
+        return [], est_params, true_params
 
     for i in range(n_samples):
         if n_samples > 1:
             print('Sample:', i)
         graphs.append(sample_tricycle_graph_attr(sbm_params, degree_seq, n_triangles))
     
-    est_params = {'sbm_params': sbm_params, 'degree_seq': degree_seq, 'n_triangles': n_triangles}
-    true_params = {'sbm_params': sbm_params_exact, 'degree_seq': degree_seq_exact, 'n_triangles': n_triangles_exact}
     return graphs, est_params, true_params
 
 # return list of neighbors of A in i
@@ -239,6 +244,11 @@ def post_process_deg(deg_list):
         for k in range(b, j_star):
             s[k] = M(b, j_star)
         b = j_star + 1
+    
+    # if post-processing fails, return original list clipped to valid range
+    if sum(s) == 0:
+        return np.clip(deg_list, 0, len(deg_list) - 1)
+
     return s
 
 # Returns a random graph with given expected degrees.
