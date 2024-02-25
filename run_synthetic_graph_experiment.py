@@ -186,7 +186,7 @@ def main():
 
 
     # run with privacy
-    for eps in [1.]:
+    for eps in [2.]:
         cutoff_rate = 1.
         ### NEED TO USE BEST CUTOFF RATE FOR EACH EPS, DATASET
         print('=====================================================================')
@@ -194,6 +194,7 @@ def main():
         print('=====================================================================')
         out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False)
         pickle.dump(out, open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+
 
     # eps = 1.
     # cutoff_rate = 1.
