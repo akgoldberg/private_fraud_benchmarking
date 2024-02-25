@@ -262,7 +262,10 @@ def expected_degree_graph(w, selfloops=False, X=None, A=None):
     if not selfloops:
         last -= 1
     
-    while G.number_of_edges() < m:
+    max_iter = (n**2)
+
+    while G.number_of_edges() < m and max_iter > 0:
+        max_iter -= 1
         for u in range(last):
             v = u
             if not selfloops:
