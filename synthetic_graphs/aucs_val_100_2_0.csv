@@ -1,0 +1,13 @@
+random,clustering_coeff,clustering_coeff_neg,community_detection,truncate_svd_sum10,truncate_svd_max50,degree,degree_neg,agg1,agg2,agg_max,eps,deg_cutoff_rate,dataset,synthetic_algo,iter,non_private
+0.5044,0.3497,0.6502,0.5118,0.0,0.266,0.0,1.0,0.0065,0.0,0.2927,2.0,1.0,yelp,sbm_dp,0,False
+0.5069,0.0001,0.8341,0.6158,0.0696,0.2006,0.0696,0.923,0.0,0.8342,0.002,2.0,1.0,yelp,attr_graph_simp,0,False
+0.5099,0.5028,0.4957,0.2968,0.4906,0.4935,0.4753,0.4952,0.4926,0.4991,0.4923,2.0,1.0,yelp,topmfilter,0,False
+0.4147,0.0,0.0,0.0645,0.3283,0.3202,0.3277,0.0691,0.0,0.0,0.0,2.0,1.0,elliptic,sbm_dp,0,False
+0.605,0.0,0.0,0.9838,0.0,0.0,0.0,0.9838,0.0,0.0,0.0,2.0,1.0,elliptic,attr_graph_simp,0,False
+0.6046,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,2.0,1.0,elliptic,topmfilter,0,False
+0.5031,0.0568,0.0042,0.0005,0.9996,0.5461,1.0,0.0,0.5558,0.0,0.0378,2.0,1.0,amazon_sbm,sbm_dp,0,False
+0.5075,0.0006,0.0018,0.0531,0.0427,0.0448,0.0427,0.0539,0.0,0.0,0.0,2.0,1.0,amazon_sbm,attr_graph_simp,0,False
+0.4839,0.5196,0.4776,0.2514,0.4935,0.4907,0.4731,0.4928,0.5016,0.4897,0.488,2.0,1.0,amazon_sbm,topmfilter,0,False
+0.5332,0.0,0.1514,0.0855,0.1735,0.7655,0.1385,0.7842,0.1731,0.8275,0.7173,2.0,1.0,peer_review_sbm,sbm_dp,0,False
+0.531,0.0,0.0,0.1126,0.0789,0.1259,0.0776,0.1427,0.0,0.0,0.0,2.0,1.0,peer_review_sbm,attr_graph_simp,0,False
+0.5258,0.0,0.0006,0.4284,0.3927,0.3934,0.3188,0.4741,0.0,0.0,0.0,2.0,1.0,peer_review_sbm,topmfilter,0,False

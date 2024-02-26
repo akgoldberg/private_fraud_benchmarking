@@ -1,0 +1,6 @@
+random,clustering_coeff,clustering_coeff_neg,community_detection,truncate_svd_sum10,truncate_svd_max50,degree,degree_neg,agg1,agg2,agg_max,eps,deg_cutoff_rate,dataset,synthetic_algo,iter,non_private
+0.5079,0.3719,0.628,0.4899,0.0,0.2725,0.0,1.0,0.0059,0.0,0.2932,2.0,1.0,yelp,sbm_dp,2,False
+0.4969,0.1999,0.7576,0.5582,0.2874,0.3335,0.2875,0.71,0.2791,0.6874,0.3395,2.0,1.0,yelp,attr_graph_simp,2,False
+0.4972,0.5015,0.4971,0.3203,0.4988,0.5029,0.4859,0.4848,0.509,0.5055,0.5021,2.0,1.0,yelp,topmfilter,2,False
+0.4527,0.0,0.0,0.0808,0.112,0.1078,0.1064,0.0852,0.0,0.0,0.0,2.0,1.0,elliptic,sbm_dp,2,False
+0.6149,0.0,0.24,0.6782,0.1506,0.1517,0.1506,0.68,0.0,0.0,0.0,2.0,1.0,elliptic,attr_graph_simp,2,False

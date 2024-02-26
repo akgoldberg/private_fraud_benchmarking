@@ -201,7 +201,7 @@ def main():
 
 
     # run with privacy
-    for eps in [5.]:
+    for eps in [2.]:
         cutoff_rate = 1.
         ### NEED TO USE BEST CUTOFF RATE FOR EACH EPS, DATASET
         print('=====================================================================')
