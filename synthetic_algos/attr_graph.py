@@ -126,7 +126,7 @@ def sample_tricycle_graph(degree_seq, n_tri, X=None, A=None):
     
     if n_tri > 0:
         tau = get_n_triangles(E_T)
-        print('Sampling triangles.')
+        print(f'Adding {n_tri - tau} triangles.')
     else:
         tau = 0
 
@@ -134,8 +134,8 @@ def sample_tricycle_graph(degree_seq, n_tri, X=None, A=None):
     iter = 0
     # sample edges until we have n_tri triangles
     while tau < n_tri and iter < max_iter:
-        # if iter % 1000 == 0:
-            # print(f'Triangle-Adding Iteration {iter}, Number of triangles: {tau}')
+        if iter % 1000 == 0:
+            print(f'Triangle-Adding Iteration {iter}, Number of triangles: {tau}')
         i = np.random.choice(v_list, p=pi) 
         N_i = neighbors(E_T, i)
 
