@@ -52,8 +52,9 @@ def load_nonprivate_results(stat='aucs', split='val'):
     out = pd.concat(dfs).reset_index(drop=True)
     return out.groupby('dataset').mean().reset_index()
 
-def generate_leaderboard(df, datasets, algos, print_latex=False):
-    df = df.melt(id_vars=['dataset'], value_vars=algos, var_name='algo', value_name='auc')
+def generate_leaderboard(df, datasets, algos, reformat_dataset=True, print_latex=False):
+    if reformat_dataset:
+        df = df.melt(id_vars=['dataset'], value_vars=algos, var_name='algo', value_name='auc')
     dfs = []
     for dataset in datasets:
         df_sub = df[df['dataset'] == dataset].reset_index(drop=True)
