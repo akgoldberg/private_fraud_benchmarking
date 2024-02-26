@@ -207,7 +207,7 @@ def main():
         print('=====================================================================')
         print('Running synthetic data generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
         print('=====================================================================')
-        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False, split='val')
+        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False, split='test')
         pickle.dump(out, open(f'results/synthetic_val_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
     # eps = 1.
