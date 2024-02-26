@@ -89,7 +89,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
             graphs_agm_simp, params_agm_simp, params_agm_simp_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=False, stats_only=statistics_only)
             time_agm_simp = time.time() - t
 
-        if split != 'test':
+        if split != 'test' and non_private:
             print(f'Running attr_graph on {name}')
 
             A_name, labels_name = get_filenames(name, 'attr_graph', i, deg_cutoff_rate, eps)
@@ -183,21 +183,21 @@ def test_statistic_error(eps, deg_cutoff_rate, iters=10):
 
 def main():
     # get sufficient statistics for each algorithm
-    for eps in [2., 5., 10.]:
-        for cutoff_rate in [0.5, 0.75, 1.]:
-            if eps == 2. and cutoff_rate != 1.:
-                continue 
-            print('=====================================================================')
-            print('Running synthetic data stats generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
-            print('=====================================================================')
-            out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, statistics_only=True)
-            pickle.dump(out, open(f'results/synthetic_stats_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
-    return 
+    # for eps in [2., 5., 10.]:
+    #     for cutoff_rate in [0.5, 0.75, 1.]:
+    #         if eps == 2. and cutoff_rate != 1.:
+    #             continue 
+    #         print('=====================================================================')
+    #         print('Running synthetic data stats generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
+    #         print('=====================================================================')
+    #         out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, statistics_only=True)
+    #         pickle.dump(out, open(f'results/synthetic_stats_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+    # return 
 
 
     # # run without privacy
-    out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
-    pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
+    # out = generate_synthetic_datasets(0, 0, iters=10, non_private=True)
+    # pickle.dump(out, open('results/synthetic_non_private.pkl', 'wb'))
 
 
     # run with privacy
@@ -207,8 +207,8 @@ def main():
         print('=====================================================================')
         print('Running synthetic data generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
         print('=====================================================================')
-        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False, split='test')
-        pickle.dump(out, open(f'results/synthetic_test_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False, split='val')
+        pickle.dump(out, open(f'results/synthetic_val_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
     # eps = 1.
     # cutoff_rate = 1.
