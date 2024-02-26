@@ -146,6 +146,23 @@ def grid_search_svd_threshold():
         pickle.dump(res, f)
 
 #############################################################################
+################# Run Tests for Subsample Aggregate ### #####################
+#############################################################################
+def run_partition_aggregate_test():
+    d = load_test_data()
+    
+    out = {}
+
+    params = [(20, 0.1), (5, 0.8)] # best params for eps = 0.5, eps = 2.0 respectively
+
+    for k, sub_rate in params:
+        res = run_evaluation_subsample_aggregate(d, k, sub_rate)
+        out[k, sub_rate] = res
+
+    with open(f'results/test_pda.pkl', 'wb') as f:
+        pickle.dump(out, f)
+
+#############################################################################
 ################# Choose Subsample Aggregate Parameters #####################
 #############################################################################
 
