@@ -107,7 +107,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 graphs_agm, params_agm, params_agm_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=True, stats_only=statistics_only)
                 time_agm = time.time() - t
         else: 
-            graphs_agm, params_agm, params_agm_true = [], None, None
+            graphs_agm, params_agm, params_agm_true = None, None, None
             time_agm = 0
         
         print(f'Running topmfilter on {name}')
