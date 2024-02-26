@@ -153,7 +153,7 @@ def run_partition_aggregate_test():
     
     out = {}
 
-    params = [(20, 0.1), (5, 0.8)] # best params for eps = 0.5, eps = 2.0 respectively
+    params = [(20, 0.1), (5, 0.75), (10, 0.75)] # best params for eps = 0.5, eps = 2.0, eps = 1.0, eps=2.5  respectively
 
     for k, sub_rate in params:
         res = run_evaluation_subsample_aggregate(d, k, sub_rate)
@@ -227,6 +227,10 @@ def run_evaluation_subsample_aggregate(d, k, sub_rate, iters=10):
 ################################################################
 def main():
     
+    run_partition_aggregate_test()
+
+    return 
+
     # run non-private evaluations on val data
     d = load_validation_data()
     res = run_evaluation_non_private(d)

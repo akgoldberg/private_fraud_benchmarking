@@ -15,16 +15,30 @@ SYNTHETIC_ALGOS = {
     'topmfilter': 'TopMFilter',
 }
 
+# expected L1 distance between sorted degree sequences of real and estimated graphs
+def degree_seq_err(d_real, d_est):
+    # sort np array d_real
+    d_real = np.sort(d_real)
+    # get estimated distribution of degrees
+    hist_est = np.bincount(d_est)
+    p_est = 1.*hist_est / sum(hist_est)
+    
+    # sample from estimated distribution
+    total_err = 0
+    iters = 100
+    for _ in range(iters):
+        sample = np.sort(np.random.choice(range(len(hist_est)), size=len(d_real), p=p_est))
+        err = np.abs(sample - d_real).mean() # average absolute difference in degree between sorted sampled and real degree sequence
+        total_err += err 
+    return 1. * total_err / iters
+
 def get_param_error(param_name, params, params_true):
     if param_name == 'sbm_params':
         _,_,p0_est,_,p01_est = params[param_name]
         _,_,p0,_,p01 = params_true[param_name]
         return [p0_est - p0, p01_est - p01], [p0, p01]
     if param_name == 'degree_seq':
-        hist_len = max(len(params[param_name]), len(params_true[param_name]))
-        hist_est = np.bincount(params[param_name], minlength=hist_len)
-        hist_true = np.bincount(params_true[param_name].astype(int), minlength=hist_len)
-        return (hist_est - hist_true).tolist(), hist_true.tolist()
+        return degree_seq_err(params_true[param_name], params[param_name]), params_true[param_name].tolist()
     else:
         return params[param_name] - params_true[param_name], params_true[param_name]
 
@@ -99,13 +113,12 @@ def analyze_param_error(df):
     # analyze for attr_graph
     df_attr = df[df['synthetic_algo'] == 'attr_graph'].copy()
     df_attr['rel_err_sbm'] = df_attr['sbm_params_err'].abs().apply(sum) / df_attr['sbm_params'].apply(sum)
-    df_attr['rel_err_degree_seq'] = df_attr['degree_seq_err'].abs().apply(sum) / df_attr['degree_seq'].apply(sum)
+    df_attr['rel_err_degree_seq'] = df_attr['degree_seq_err'].abs() / df_attr['degree_seq'].apply(np.mean)
     df_attr['rel_err_ntriangles'] = df_attr['n_triangles_err'].abs() / df_attr['n_triangles']
     rel_err_attr = df_attr.groupby(['eps', 'dataset', 'deg_cutoff_rate'])[['rel_err_sbm', 'rel_err_degree_seq', 'rel_err_ntriangles']].mean().reset_index()
     rel_err_attr['rel_err_sbm'] = rel_err_attr.rel_err_sbm.apply(lambda a: np.round(a, 3))
     rel_err_attr['rel_err_degree_seq'] = rel_err_attr.rel_err_degree_seq.apply(lambda a: np.round(a, 3))
     rel_err_attr['rel_err_ntriangles'] = rel_err_attr.rel_err_ntriangles.apply(lambda a: np.round(a, 3))
-
 
     # analyze for topmfilter 
     df_topm = df[df['synthetic_algo'] == 'topmfilter'].copy()
@@ -115,7 +128,7 @@ def analyze_param_error(df):
     return rel_err_sbm, rel_err_attr, rel_err_topm
 
 def main():
-    for cutoff_rate in [1., 0.75, 0.5]:
+    for cutoff_rate in [1., 0.75, 0.5, 0.25]:
         print(f'========CUTOFF RATE {cutoff_rate}===========')
         print(get_n_truncated(cutoff_rate, split='val'))
 
