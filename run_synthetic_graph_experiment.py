@@ -97,13 +97,16 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 graphs_agm, params_agm, params_agm_true = [(A, labels)], None, None
                 time_agm = 0
             else:
+                # graphs_agm, params_agm, params_agm_true = None, None, None
+                # time_agm = 0
+                
                 t = time.time()
                 graphs_agm, params_agm, params_agm_true = attr_graph.run_generate_synthetic_agm(A, labels, eps, deg_cutoff, non_private=non_private, n_samples=1, use_triangles=True, stats_only=statistics_only)
                 time_agm = time.time() - t
         
         print(f'Running topmfilter on {name}')
         A_name, labels_name = get_filenames(name, 'topmfilter', i, deg_cutoff_rate, eps)
-        if not statistics_only and os.path.exists(A_name) and os.path.exists(labels_name):
+        if not statistics_only and os.path.exists(A_name) and os.path.eƒaxists(labels_name):
             # print('Data already exists, loading from file')
             A = scipy.sparse.load_npz(A_name)
             labels = np.loadtxt(labels_name, delimiter=',')
@@ -147,7 +150,7 @@ def run_single_iter_generate_synthetic_datasets(d, eps, deg_cutoff_rate, i, stat
                 aucs_df = pd.DataFrame(aucs, index=[0])
 
                 # dump to csv each row
-                aucs_file = f'synthetic_graphs/aucs_{int(100*deg_cutoff_rate)}_{int(eps)}_{i}.csv'
+                aucs_file = f'synthetic_graphs/aucs_test_{int(100*deg_cutoff_rate)}_{int(eps)}_{i}.csv'
                 if os.path.exists(aucs_file):
                     aucs_df.to_csv(aucs_file, mode='a', header=False, index=False)
                 else:    
@@ -190,14 +193,14 @@ def main():
 
 
     # run with privacy
-    for eps in [1.]:
+    for eps in [5.]:
         cutoff_rate = 1.
         ### NEED TO USE BEST CUTOFF RATE FOR EACH EPS, DATASET
         print('=====================================================================')
         print('Running synthetic data generation for eps:', eps, 'cutoff_rate:', cutoff_rate)
         print('=====================================================================')
-        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False)
-        pickle.dump(out, open(f'results/synthetic_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
+        out = generate_synthetic_datasets(eps, cutoff_rate, iters=10, non_private=False, run_parallel=False, split='test')
+        pickle.dump(out, open(f'results/synthetic_test_{int(eps)}{int(100*cutoff_rate)}.pkl', 'wb'))
 
     # eps = 1.
     # cutoff_rate = 1.

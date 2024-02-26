@@ -252,10 +252,27 @@ def post_process_deg(deg_list):
     return s
 
 # Returns a random graph with given expected degrees.
-def expected_degree_graph(w, selfloops=False, X=None, A=None):  
+def expected_degree_graph(w, selfloops=False, X=None, A=None, fast=True):  
     n = len(w)
     m = sum(w) / 2
+    
     G = nx.empty_graph(n)
+
+    max_iter = (n**2)
+    if fast: 
+        while G.number_of_edges() < m and max_iter > 0:
+            max_iter -= 1
+            for _ in range(m): 
+                # Draw node i with probability w_i / sum(w)
+                i = np.random.choice(n, p=w/sum(w))
+                # Draw node j with probability w_j / sum(w)
+                j = np.random.choice(n, p=w/sum(w))
+                if i == j and not selfloops:
+                    continue
+                if np.random.rand() <= acceptance_prob(i,j,X,A):
+                    G.add_edge(i, j)
+        return G
+    
 
     # If there are no nodes are no edges in the graph, return the empty graph.
     if n == 0 or max(w) == 0:
