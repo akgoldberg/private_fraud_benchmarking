@@ -121,13 +121,14 @@ def sample_tricycle_graph_attr(sbm_params, degree_seq, n_tri, iters=1000):
 def sample_tricycle_graph(degree_seq, n_tri, X=None, A=None):
     v_list = np.where(degree_seq > 1)[0]
     pi = degree_seq[v_list] / np.sum(degree_seq[v_list]) # distribution of nodes to sample from 
-    G = expected_degree_graph(degree_seq, selfloops=False, X=X, A=A) 
-    edges = list(G.edges()) # all edges sorted from oldest to newest    
 
-    # get adjacency matrix
-    E_T = nx.to_scipy_sparse_array(G)
-    E_T = scipy.sparse.csr_matrix(E_T)
-    tau = get_n_triangles(E_T)
+    E_T, edges = expected_degree_graph(degree_seq, selfloops=False, X=X, A=A) 
+    
+    if n_tri > 0:
+        tau = get_n_triangles(E_T)
+        print('Sampling triangles.')
+    else:
+        tau = 0
 
     max_iter = len(degree_seq) 
     iter = 0
@@ -252,11 +253,41 @@ def post_process_deg(deg_list):
     return s
 
 # Returns a random graph with given expected degrees.
-def expected_degree_graph(w, selfloops=False, X=None, A=None):  
+def expected_degree_graph(w, selfloops=False, X=None, A=None, fast=True):  
     n = len(w)
-    m = sum(w) / 2
-    G = nx.empty_graph(n)
+    m = int(sum(w) / 2)
+    
+    M = np.zeros((n,n))
+    n_edges = 0
+    edge_list = []
 
+    max_iter = 2*m
+    if fast: 
+        while n_edges < m and max_iter > 0:
+            # sample m pairs of (i,j)
+            i_samp = np.random.choice(n, m, p=w/sum(w))
+            j_samp = np.random.choice(n, m, p=w/sum(w))
+            # sample accept probs
+            accept_probs = np.random.rand(m)
+            for t in range(m):
+                max_iter -= 1
+                if n_edges >= m:
+                    return scipy.sparse.csr_matrix(M), edge_list
+
+                i = i_samp[t]
+                j = j_samp[t]
+                if i == j and not selfloops:
+                    continue
+                
+                if M[i,j] == 0 and accept_probs[t] <= acceptance_prob(i,j,X,A):
+                    M[i,j] = 1
+                    M[j,i] = 1
+                    edge_list.append((i,j))
+                
+        return scipy.sparse.csr_matrix(M), edge_list
+    
+
+    G = nx.Graph()
     # If there are no nodes are no edges in the graph, return the empty graph.
     if n == 0 or max(w) == 0:
         return G
@@ -292,7 +323,10 @@ def expected_degree_graph(w, selfloops=False, X=None, A=None):
                         G.add_edge(mapping[u], mapping[v])
                     v += 1
                     p = q
-    return G
+    E_T = nx.to_scipy_sparse_array(G)
+    E_T = scipy.sparse.csr_matrix(E_T)
+    edge_list = list(G.edges())
+    return E_T, edge_list
 
 if __name__ == '__main__':
     # Example usage
