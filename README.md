@@ -24,6 +24,6 @@ We describe the main files below.
 - `analyze_synthetic_graph_experiment`: script to be run after executing run_synthetic_graph_experiment to analyze accuracy of using synthetic graph generation methods at different privacy budgets.
 - `fraud_detectory.py`: Implementations of the fraud detectors benchmarked.
 - `visualizations.ipynb`: Notebook to generate the charts used in the paper.
-- `synthetic_algos/': Directory containing all synthetic graph data generation algorithm implementations
+- `synthetic_algos/`: Directory containing all synthetic graph data generation algorithm implementations
 - `datasets`: Directory containing all code needed to load the graph data used.
 
