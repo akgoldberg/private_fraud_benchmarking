@@ -2,12 +2,16 @@ This directory contains Python code to reproduce experimental results from our K
 
 # Setup 
 
-We use conda to install necessary requirements. To recreate the conda environment used to run this code, execute
+We use conda to install necessary requirements. To recreate the conda environment used to run this code, execute:
+
     > conda env create -f environment.yml
+    
 which should create a conda environment called benchmark.
 
-Then run 
+Then run:
+
     > conda activate benchmark
+    
 Once the environment is activated, you can excecute the provided python scripts to replicate experiments. You will want to create a directory named results/ under the root directory where experiment results are automatically saved after running experiments and loaded from for analysis.
 
 We describe the main files below.
